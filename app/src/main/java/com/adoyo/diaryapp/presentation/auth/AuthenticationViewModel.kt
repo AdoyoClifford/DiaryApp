@@ -20,7 +20,7 @@ class AuthenticationViewModel: ViewModel() {
         loadingState.value = loading
     }
 
-    fun signInWithMongo(
+    fun signInWithMongoAtlas(
         tokenId: String,
         onSuccess: (Boolean) -> Unit,
         onError: (Exception) -> Unit
