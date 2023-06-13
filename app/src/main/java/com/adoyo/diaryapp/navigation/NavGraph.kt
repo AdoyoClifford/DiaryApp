@@ -1,5 +1,6 @@
 package com.adoyo.diaryapp.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +37,7 @@ fun NavGraphBuilder.authenticationRoute() {
             loadingState = loadingState,
             messageBarState = messageBarState,
             onTokenIdReceived = { tokenId ->
+                Log.d("Auth",tokenId)
                 viewModel.signInWithMongoAtlas(
                     tokenId = tokenId,
                     onSuccess = {
