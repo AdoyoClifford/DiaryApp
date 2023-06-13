@@ -8,10 +8,14 @@ import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.GoogleAuthType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AuthenticationViewModel: ViewModel() {
+class AuthenticationViewModel : ViewModel() {
+
+    var isAuthenticated = mutableStateOf(false)
+        private set
 
     var loadingState = mutableStateOf(false)
         private set
@@ -22,7 +26,7 @@ class AuthenticationViewModel: ViewModel() {
 
     fun signInWithMongoAtlas(
         tokenId: String,
-        onSuccess: (Boolean) -> Unit,
+        onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
         viewModelScope.launch {
@@ -30,12 +34,19 @@ class AuthenticationViewModel: ViewModel() {
                 val result = withContext(Dispatchers.IO) {
                     App.Companion.create(APP_ID).login(
                         Credentials.jwt(tokenId)
-                       // Credentials.google(tokenId, GoogleAuthType.ID_TOKEN)
+                        // Credentials.google(tokenId, GoogleAuthType.ID_TOKEN)
                     )
                 }.loggedIn
                 withContext(Dispatchers.Main) {
-                    onSuccess(result)
+                    if (result) {
+                        onSuccess()
+                        delay(600)
+                        isAuthenticated.value = true
+                    } else {
+                        onError(Exception("User is not logged in."))
+                    }
                 }
+
             } catch (e: Exception) {
                 onError(e)
             }
