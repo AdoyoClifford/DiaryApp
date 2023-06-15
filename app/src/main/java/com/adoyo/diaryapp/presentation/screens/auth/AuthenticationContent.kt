@@ -1,4 +1,4 @@
-package com.adoyo.diaryapp.presentation.auth
+package com.adoyo.diaryapp.presentation.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

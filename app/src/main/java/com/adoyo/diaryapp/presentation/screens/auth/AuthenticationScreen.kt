@@ -1,10 +1,13 @@
-package com.adoyo.diaryapp.presentation.auth
+package com.adoyo.diaryapp.presentation.screens.auth
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import com.adoyo.diaryapp.utils.Constants.CLIENT_ID
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarState
@@ -25,9 +28,15 @@ fun AuthenticationScreen(
     navigateHome: () -> Unit
 ) {
     Scaffold(
+        modifier = Modifier
+            .statusBarsPadding()
+            .navigationBarsPadding(),
         content = {
             ContentWithMessageBar(messageBarState = messageBarState) {
-                AuthenticationContent(loadingState = loadingState, onButtonClicked = onButtonClicked)
+                AuthenticationContent(
+                    loadingState = loadingState,
+                    onButtonClicked = onButtonClicked
+                )
             }
         }
     )
@@ -36,7 +45,7 @@ fun AuthenticationScreen(
         state = oneTapState,
         clientId = CLIENT_ID,
         onTokenIdReceived = { token ->
-           onTokenIdReceived(token)
+            onTokenIdReceived(token)
         },
         onDialogDismissed = { message ->
             onDialogDismissed(message)
