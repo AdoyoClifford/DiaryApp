@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.adoyo.diaryapp.navigation
 
 import androidx.compose.material3.DrawerValue
@@ -29,6 +27,7 @@ import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SetUpNavGraph(startDestination: String, navHostController: NavHostController) {
@@ -118,7 +117,9 @@ fun NavGraphBuilder.homeRoute(navigateToWrite: () -> Unit, navigateToAuth: () ->
                 if (user != null) {
                     scope.launch(Dispatchers.IO) {
                         user.logOut()
-                        navigateToAuth()
+                        withContext(Dispatchers.Main) {
+                            navigateToAuth()
+                        }
                     }
                 }
             })
