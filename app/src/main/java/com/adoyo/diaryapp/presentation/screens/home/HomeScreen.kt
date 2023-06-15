@@ -15,6 +15,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -76,12 +77,12 @@ fun NavigationDrawer(
                         Row(
                             modifier = Modifier.padding(horizontal = 12.dp)
                         ) {
-                            Icon(
+                            Image(
                                 painter = painterResource(id = R.drawable.google_logo),
                                 contentDescription = "Google Logo"
                             )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = "Sign Out")
+                            Text(text = "Sign Out", color = MaterialTheme.colorScheme.onSurface)
 
                         }
                     }, selected = false, onClick = onSignOutClicked)
@@ -90,12 +91,4 @@ fun NavigationDrawer(
         },
         content = content
     )
-}
-
-@Preview
-@Composable
-fun DrawerPreview() {
-    NavigationDrawer(drawerState = rememberDrawerState(initialValue = DrawerValue.Open), onSignOutClicked = { /*TODO*/ }) {
-
-    }
 }
