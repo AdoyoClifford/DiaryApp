@@ -92,7 +92,6 @@ fun NavigationDrawer(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun DrawerPreview() {

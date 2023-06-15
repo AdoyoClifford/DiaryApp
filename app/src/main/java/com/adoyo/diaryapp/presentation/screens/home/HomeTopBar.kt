@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -14,10 +15,12 @@ import androidx.compose.runtime.Composable
 fun HomeTopBar(onMenuClicked: () -> Unit) {
     TopAppBar(
         navigationIcon = {
-            Icon(
-                imageVector = Icons.Default.Menu,
-                contentDescription = "Hamburger menu"
-            )
+            IconButton(onClick = onMenuClicked) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Hamburger menu"
+                )
+            }
         },
         title = {
             Text(text = "Diary")
@@ -29,6 +32,6 @@ fun HomeTopBar(onMenuClicked: () -> Unit) {
             )
         }
 
-        )
+    )
 
 }

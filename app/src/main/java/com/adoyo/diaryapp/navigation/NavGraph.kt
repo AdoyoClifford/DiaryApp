@@ -90,7 +90,6 @@ fun NavGraphBuilder.homeRoute(navigateToWrite: () -> Unit) {
                 scope.launch {
                     drawerState.open()
                 }
-
             },
             navigateToWrite = navigateToWrite,
             onSignOutClicked = {})
