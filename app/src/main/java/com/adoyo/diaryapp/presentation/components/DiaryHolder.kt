@@ -1,5 +1,6 @@
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.adoyo.diaryapp.model.Diary
 import com.adoyo.diaryapp.model.Mood
+import com.adoyo.diaryapp.presentation.components.Gallery
+import com.adoyo.diaryapp.presentation.components.ShowGalleryButton
 import com.adoyo.diaryapp.ui.theme.Elevation
 import com.adoyo.diaryapp.utils.toInstant
 import java.text.SimpleDateFormat
@@ -48,13 +51,18 @@ fun DiaryHolder(diary: Diary, onClick: (String) -> Unit) {
     var componentHeight by remember {
         mutableStateOf(0.dp)
     }
+    var galleryOpened by remember {
+        mutableStateOf(false)
+    }
     Row(
-        modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp).clickable(
-            indication = null,
-            interactionSource = remember {
-                MutableInteractionSource()
-            }
-        ) { onClick(diary._id.toString()) }
+        modifier = Modifier
+            .padding(horizontal = 14.dp, vertical = 7.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember {
+                    MutableInteractionSource()
+                }
+            ) { onClick(diary._id.toString()) }
     ) {
         Spacer(modifier = Modifier.width(14.dp))
         Surface(
@@ -84,6 +92,19 @@ fun DiaryHolder(diary: Diary, onClick: (String) -> Unit) {
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                if (diary.images.isNotEmpty()) {
+                    ShowGalleryButton(galleryOpened = galleryOpened, onClick = {
+                        galleryOpened = !galleryOpened
+                    })
+                }
+                AnimatedVisibility(visible = galleryOpened) {
+                    Column(
+                        modifier = Modifier.padding(14.dp)
+                    ) {
+                        Gallery(images = diary.images)
+                    }
+                }
             }
         }
     }
@@ -140,3 +161,4 @@ fun DiaryPreview() {
         mood = Mood.Happy.name
     }, onClick = {})
 }
+

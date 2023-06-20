@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -34,7 +36,9 @@ fun Gallery(
     spaceBetween: Dp = 10.dp,
     imageShape: CornerBasedShape = Shapes().small
 ) {
-    BoxWithConstraints {
+    BoxWithConstraints(
+        modifier = modifier
+    ) {
         val numberOfVisibleImages = remember {
             derivedStateOf {
                 max(a = 0, b = this.maxWidth.div(imagesSize + spaceBetween).toInt().minus(1))
@@ -57,6 +61,14 @@ fun Gallery(
                         .build(), contentDescription = "Gallery Image"
                 )
                 Spacer(modifier = Modifier.width(spaceBetween))
+            }
+
+            if (remainingImages.value > 0) {
+                LastImageOverlay(
+                    imageSize = imagesSize,
+                    remainingImages = remainingImages.value,
+                    imageShape = imageShape
+                )
             }
         }
     }
@@ -87,4 +99,17 @@ fun LastImageOverlay(
         )
     }
 
+}
+
+@Composable
+fun ShowGalleryButton(
+    galleryOpened: Boolean,
+    onClick: () -> Unit
+) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = if (galleryOpened) "Hide Gallery" else "Show Gallery",
+            style = TextStyle(fontSize = MaterialTheme.typography.bodySmall.fontSize)
+        )
+    }
 }
