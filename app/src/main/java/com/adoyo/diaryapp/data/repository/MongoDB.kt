@@ -22,7 +22,7 @@ object MongoDB: MongoRepository {
                         name = "user's diaries"
                     )
                 }
-                .log(LogLevel.ALL)
+              //  .log(LogLevel.ALL)
                 .build()
             realm = Realm.open(config)
         }
