@@ -7,7 +7,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -36,25 +39,30 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.adoyo.diaryapp.R
+import com.adoyo.diaryapp.data.repository.Diaries
 import com.adoyo.diaryapp.model.Diary
+import com.adoyo.diaryapp.utils.RequestState
 import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeContent(
+    paddingValues: PaddingValues,
     diaryNotes: Map<LocalDate, List<Diary>>,
     onClick: (String) -> Unit
 ) {
     if (diaryNotes.isNotEmpty()) {
         LazyColumn(
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier
+                .padding(horizontal = 24.dp)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             diaryNotes.forEach { (localDate, diaries) ->
                 stickyHeader(localDate) {
                     DateHeader(localDate = localDate)
                 }
-                items(items = diaries, key = { it._id }) {
+                items(items = diaries, key = { it._id.toString() }) {
                     DiaryHolder(diary = it, onClick = onClick)
                 }
             }
@@ -69,6 +77,7 @@ fun HomeContent(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
+    diaries: Diaries,
     onMenuClicked: () -> Unit,
     navigateToWrite: () -> Unit,
     drawerState: DrawerState,
@@ -79,7 +88,29 @@ fun HomeScreen(
         Scaffold(
             topBar = { HomeTopBar(onMenuClicked = onMenuClicked) },
             content = {
-                HomeContent(diaryNotes = mapOf(), onClick = {})
+                when (diaries) {
+                    is RequestState.Success -> {
+                        HomeContent(paddingValues = it, diaryNotes = diaries.data, onClick = {})
+                    }
+
+                    is RequestState.Error -> {
+                        EmptyPage(
+                            title = "Error",
+                            subtitle = "${diaries.error.message}"
+                        )
+                    }
+
+                    is RequestState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    else -> {}
+                }
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = navigateToWrite) {

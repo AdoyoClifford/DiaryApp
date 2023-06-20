@@ -1,5 +1,8 @@
 package com.adoyo.diaryapp.navigation
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDrawerState
@@ -22,6 +25,7 @@ import com.adoyo.diaryapp.presentation.components.DisplayAlertDialog
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationViewModel
 import com.adoyo.diaryapp.presentation.screens.home.HomeScreen
+import com.adoyo.diaryapp.presentation.screens.home.HomeViewModel
 import com.adoyo.diaryapp.utils.Constants.APP_ID
 import com.adoyo.diaryapp.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -31,6 +35,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetUpNavGraph(startDestination: String, navHostController: NavHostController) {
     NavHost(navController = navHostController, startDestination = startDestination) {
@@ -91,14 +96,19 @@ fun NavGraphBuilder.authenticationRoute(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.homeRoute(navigateToWrite: () -> Unit, navigateToAuth: () -> Unit) {
     composable(Screen.Home.route) {
         var signOutDialogOpened by remember {
             mutableStateOf(false)
         }
+        val viewModel: HomeViewModel = viewModel()
+        val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
+        Log.d("Data","$diaries")
         HomeScreen(
+            diaries = diaries,
             drawerState = drawerState,
             onMenuClicked = {
                 scope.launch {
