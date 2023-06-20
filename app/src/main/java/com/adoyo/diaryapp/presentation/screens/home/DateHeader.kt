@@ -15,11 +15,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DateHeader(localDate: LocalDateTime) {
+fun DateHeader(localDate: LocalDate) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Column(horizontalAlignment = Alignment.End) {
             Text(
@@ -64,5 +65,5 @@ fun DateHeader(localDate: LocalDateTime) {
 @Preview(showBackground = true)
 @Composable
 fun HeaderPreview() {
-    DateHeader(localDate = LocalDateTime.now())
+    DateHeader(localDate = LocalDate.now())
 }
