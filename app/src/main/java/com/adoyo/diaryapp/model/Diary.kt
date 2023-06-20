@@ -17,5 +17,5 @@ open class Diary : RealmObject {
     var title: String = ""
     var description: String = ""
     var images: RealmList<String> = realmListOf()
-   // var date: RealmInstant = Instant.now().toRealmInstant()
+    var date: RealmInstant = RealmInstant.from(System.currentTimeMillis(),0)
 }
