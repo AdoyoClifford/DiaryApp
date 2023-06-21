@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.adoyo.diaryapp.data.repository.MongoDB
+import com.adoyo.diaryapp.model.Diary
 import com.adoyo.diaryapp.presentation.components.DisplayAlertDialog
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationViewModel
@@ -29,6 +30,7 @@ import com.adoyo.diaryapp.presentation.screens.home.HomeViewModel
 import com.adoyo.diaryapp.utils.Constants.APP_ID
 import com.adoyo.diaryapp.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.adoyo.diaryapp.utils.RequestState
+import com.adoyo.diaryapp.write.WriteScreen
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
@@ -47,7 +49,7 @@ fun SetUpNavGraph(
         authenticationRoute(navigateHome = {
             navHostController.popBackStack()
             navHostController.navigate(Screen.Home.route)
-        })
+        }, onDataLoaded = onDataLoaded)
         homeRoute(navigateToWrite = {
             navHostController.navigate(Screen.Write.route)
         }, navigateToAuth = {
@@ -56,12 +58,13 @@ fun SetUpNavGraph(
         },
             onDataLoaded = onDataLoaded
         )
-        writeRoute()
+        writeRoute(onBackPressed = { navHostController.popBackStack() })
     }
 }
 
 fun NavGraphBuilder.authenticationRoute(
-    navigateHome: () -> Unit
+    navigateHome: () -> Unit,
+    onDataLoaded: () -> Unit
 ) {
     composable(Screen.Authentication.route) {
         val oneTapState = rememberOneTapSignInState()
@@ -69,6 +72,10 @@ fun NavGraphBuilder.authenticationRoute(
         val viewModel: AuthenticationViewModel = viewModel()
         val loadingState by viewModel.loadingState
         val isAuthenticated by viewModel.isAuthenticated
+
+        LaunchedEffect(key1 = Unit) {
+            onDataLoaded()
+        }
         AuthenticationScreen(
             oneTapState = oneTapState,
             loadingState = loadingState,
@@ -159,7 +166,7 @@ fun NavGraphBuilder.homeRoute(
     }
 }
 
-fun NavGraphBuilder.writeRoute() {
+fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
     composable(
         route = Screen.Write.route,
         arguments = listOf(navArgument(WRITE_SCREEN_ARGUMENT_KEY) {
@@ -168,6 +175,10 @@ fun NavGraphBuilder.writeRoute() {
             defaultValue = null
         })
     ) {
+        WriteScreen(onBackPressed = onBackPressed, selectedDiary = Diary().apply {
+            title = "Title"
+            description = "Hello there"
 
+        }, onDeleteConfirmed = {})
     }
 }
