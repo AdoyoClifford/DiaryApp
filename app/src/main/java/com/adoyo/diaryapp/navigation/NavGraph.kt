@@ -28,6 +28,7 @@ import com.adoyo.diaryapp.presentation.screens.home.HomeScreen
 import com.adoyo.diaryapp.presentation.screens.home.HomeViewModel
 import com.adoyo.diaryapp.utils.Constants.APP_ID
 import com.adoyo.diaryapp.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
+import com.adoyo.diaryapp.utils.RequestState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
@@ -37,7 +38,11 @@ import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SetUpNavGraph(startDestination: String, navHostController: NavHostController) {
+fun SetUpNavGraph(
+    startDestination: String,
+    navHostController: NavHostController,
+    onDataLoaded: () -> Unit
+) {
     NavHost(navController = navHostController, startDestination = startDestination) {
         authenticationRoute(navigateHome = {
             navHostController.popBackStack()
@@ -48,7 +53,8 @@ fun SetUpNavGraph(startDestination: String, navHostController: NavHostController
         }, navigateToAuth = {
             navHostController.popBackStack()
             navHostController.navigate(Screen.Authentication.route)
-        }
+        },
+            onDataLoaded = onDataLoaded
         )
         writeRoute()
     }
@@ -97,7 +103,11 @@ fun NavGraphBuilder.authenticationRoute(
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun NavGraphBuilder.homeRoute(navigateToWrite: () -> Unit, navigateToAuth: () -> Unit) {
+fun NavGraphBuilder.homeRoute(
+    navigateToWrite: () -> Unit,
+    navigateToAuth: () -> Unit,
+    onDataLoaded: () -> Unit
+) {
     composable(Screen.Home.route) {
         var signOutDialogOpened by remember {
             mutableStateOf(false)
@@ -106,7 +116,7 @@ fun NavGraphBuilder.homeRoute(navigateToWrite: () -> Unit, navigateToAuth: () ->
         val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
-        Log.d("Data","$diaries")
+        Log.d("Data", "$diaries")
         HomeScreen(
             diaries = diaries,
             drawerState = drawerState,
@@ -122,6 +132,12 @@ fun NavGraphBuilder.homeRoute(navigateToWrite: () -> Unit, navigateToAuth: () ->
 
         LaunchedEffect(key1 = Unit) {
             MongoDB.configureTheRealm()
+        }
+
+        LaunchedEffect(key1 = diaries) {
+            if (diaries != RequestState.Loading) {
+                onDataLoaded()
+            }
         }
 
         DisplayAlertDialog(

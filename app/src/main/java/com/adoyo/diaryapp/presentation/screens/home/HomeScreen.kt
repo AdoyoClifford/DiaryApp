@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,11 +33,16 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.adoyo.diaryapp.R
 import com.adoyo.diaryapp.data.repository.Diaries
@@ -57,6 +63,9 @@ fun HomeContent(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .padding(top = paddingValues.calculateTopPadding())
+                .padding(bottom = paddingValues.calculateBottomPadding())
+                .padding(start = paddingValues.calculateLeftPadding(LayoutDirection.Ltr))
+                .padding(end = paddingValues.calculateRightPadding(LayoutDirection.Ltr))
         ) {
             diaryNotes.forEach { (localDate, diaries) ->
                 stickyHeader(localDate) {
@@ -84,10 +93,14 @@ fun HomeScreen(
     onSignOutClicked: () -> Unit
 ) {
     //val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    var padding by remember {
+        mutableStateOf(PaddingValues())
+    }
     NavigationDrawer(drawerState = drawerState, onSignOutClicked = onSignOutClicked) {
         Scaffold(
             topBar = { HomeTopBar(onMenuClicked = onMenuClicked) },
             content = {
+                padding = it
                 when (diaries) {
                     is RequestState.Success -> {
                         HomeContent(paddingValues = it, diaryNotes = diaries.data, onClick = {})
@@ -113,7 +126,10 @@ fun HomeScreen(
                 }
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = navigateToWrite) {
+                FloatingActionButton(
+                    onClick = navigateToWrite,
+                    modifier = Modifier.padding(end = padding.calculateEndPadding(LayoutDirection.Ltr))
+                ) {
                     Icon(imageVector = Icons.Default.Edit, contentDescription = "New diary")
                 }
             }

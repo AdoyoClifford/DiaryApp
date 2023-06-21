@@ -1,8 +1,10 @@
 package com.adoyo.diaryapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,11 +21,16 @@ import com.adoyo.diaryapp.navigation.SetUpNavGraph
 import com.adoyo.diaryapp.ui.theme.DiaryAppTheme
 import com.adoyo.diaryapp.utils.Constants.APP_ID
 import io.realm.kotlin.mongodb.App
-
+@RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
+
+
+   var keepSplashOpened = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition{
+            keepSplashOpened
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             DiaryAppTheme {
@@ -35,7 +42,10 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     SetUpNavGraph(
                         startDestination = getStartRoute(),
-                        navHostController = navController
+                        navHostController = navController,
+                        onDataLoaded = {
+                            keepSplashOpened = false
+                        }
                     )
 
                 }
