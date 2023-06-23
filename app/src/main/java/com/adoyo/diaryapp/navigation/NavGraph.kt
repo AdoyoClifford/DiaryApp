@@ -61,6 +61,7 @@ fun SetUpNavGraph(
             onDataLoaded = onDataLoaded,
             navigateToWriteWithArgs = {
                 navHostController.navigate(Screen.Write.passDiaryId(it))
+                Log.d("theId", it)
             }
         )
         writeRoute(onBackPressed = { navHostController.popBackStack() })
@@ -129,7 +130,8 @@ fun NavGraphBuilder.homeRoute(
         val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
-        Log.d("Data", "$diaries")
+
+
         HomeScreen(
             diaries = diaries,
             drawerState = drawerState,
@@ -142,6 +144,7 @@ fun NavGraphBuilder.homeRoute(
             onSignOutClicked = {
                 signOutDialogOpened = true
             }, navigateToWriteWithArgs = navigateToWriteWithArgs)
+
 
         LaunchedEffect(key1 = Unit) {
             MongoDB.configureTheRealm()

@@ -5,6 +5,7 @@ package com.adoyo.diaryapp.presentation.screens.home
 import DiaryHolder
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -110,7 +111,10 @@ fun HomeScreen(
                 padding = it
                 when (diaries) {
                     is RequestState.Success -> {
-                        HomeContent(paddingValues = it, diaryNotes = diaries.data, onClick = navigateToWriteWithArgs)
+                        HomeContent(paddingValues = it, diaryNotes = diaries.data, onClick = {args->
+                            Log.d("args",args)
+                            navigateToWriteWithArgs(args)
+                        })
                     }
 
                     is RequestState.Error -> {
