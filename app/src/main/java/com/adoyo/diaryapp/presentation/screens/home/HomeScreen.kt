@@ -94,6 +94,7 @@ fun HomeScreen(
     diaries: Diaries,
     onMenuClicked: () -> Unit,
     navigateToWrite: () -> Unit,
+    navigateToWriteWithArgs: (String) -> Unit,
     drawerState: DrawerState,
     onSignOutClicked: () -> Unit
 ) {
@@ -109,7 +110,7 @@ fun HomeScreen(
                 padding = it
                 when (diaries) {
                     is RequestState.Success -> {
-                        HomeContent(paddingValues = it, diaryNotes = diaries.data, onClick = {})
+                        HomeContent(paddingValues = it, diaryNotes = diaries.data, onClick = navigateToWriteWithArgs)
                     }
 
                     is RequestState.Error -> {

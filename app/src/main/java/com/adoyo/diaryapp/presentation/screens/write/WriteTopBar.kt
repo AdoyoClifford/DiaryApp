@@ -1,4 +1,4 @@
-package com.adoyo.diaryapp.write
+package com.adoyo.diaryapp.presentation.screens.write
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
