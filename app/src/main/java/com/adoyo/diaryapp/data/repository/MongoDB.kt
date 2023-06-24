@@ -75,8 +75,9 @@ object MongoDB : MongoRepository {
             }
         } else {
             RequestState.Error(UserNotAuthenticatedException())
+
         }
     }
-}
 
+}
 private class UserNotAuthenticatedException : Exception("User not Logged in")

@@ -10,9 +10,12 @@ import com.google.accompanist.pager.PagerState
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun WriteScreen(
+    uiState: UiState,
     onBackPressed: () -> Unit,
     selectedDiary: Diary?,
     onDeleteConfirmed: () -> Unit,
+    onTitleChanged: (String) -> Unit,
+    onDescriptionChanged: (String) -> Unit,
     pagerState: PagerState
 ) {
     Scaffold(
@@ -27,10 +30,10 @@ fun WriteScreen(
             WriteContent(
                 paddingValues = it,
                 pagerState = pagerState,
-                title = "",
-                onTitleCHanged = {},
-                description = "",
-                onDescriptionChange = {}
+                title = uiState.title,
+                onTitleCHanged = onTitleChanged,
+                description = uiState.description,
+                onDescriptionChange = onDescriptionChanged
             )
         }
     )

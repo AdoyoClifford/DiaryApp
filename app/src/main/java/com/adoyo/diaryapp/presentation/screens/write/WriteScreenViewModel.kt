@@ -12,9 +12,11 @@ import com.adoyo.diaryapp.data.repository.MongoDB
 import com.adoyo.diaryapp.model.Mood
 import com.adoyo.diaryapp.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.adoyo.diaryapp.utils.RequestState
-import io.realm.kotlin.types.ObjectId
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.mongodb.kbson.BsonObjectId
+import org.mongodb.kbson.ObjectId
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 class WriteScreenViewModel(
@@ -26,6 +28,7 @@ class WriteScreenViewModel(
 
     init {
         getDiaryArgument()
+        fetchSelectedDiary()
     }
 
     private fun getDiaryArgument() {
@@ -36,11 +39,12 @@ class WriteScreenViewModel(
 
 
     private fun fetchSelectedDiary() {
-        viewModelScope.launch {
-            if (uiState.selectedDiary != null) {
+        if (uiState.selectedDiary != null) {
+            viewModelScope.launch {
                 val diary = MongoDB.getSelectedDiary(
-                    diaryId = BsonObjectId(uiState.selectedDiary!!))
+                    diaryId = ObjectId(uiState.selectedDiary!!)
 
+                )
                 if (diary is RequestState.Success) {
                     setTitle(title = diary.data.title)
                     setDescription(description = diary.data.description)

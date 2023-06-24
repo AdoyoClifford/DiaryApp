@@ -143,7 +143,8 @@ fun NavGraphBuilder.homeRoute(
             navigateToWrite = navigateToWrite,
             onSignOutClicked = {
                 signOutDialogOpened = true
-            }, navigateToWriteWithArgs = navigateToWriteWithArgs)
+            }, navigateToWriteWithArgs = navigateToWriteWithArgs
+        )
 
 
         LaunchedEffect(key1 = Unit) {
@@ -175,6 +176,8 @@ fun NavGraphBuilder.homeRoute(
     }
 }
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
 fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
     composable(
@@ -187,15 +190,21 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
     ) {
         val viewModel: WriteScreenViewModel = viewModel()
         val selectedId = viewModel.uiState.selectedDiary
+        val uiState = viewModel.uiState
 
-      LaunchedEffect(key1 = Unit) {
-          Log.d("SelectedId","$selectedId")
-      }
         val pagerState = rememberPagerState()
-        WriteScreen(onBackPressed = onBackPressed, selectedDiary = Diary().apply {
-            title = "Title"
-            description = "Hello there"
+        WriteScreen(
+            uiState = uiState,
+            onBackPressed = onBackPressed,
+            selectedDiary = Diary().apply {
+                title = "Title"
+                description = "Hello there"
 
-        }, onDeleteConfirmed = {}, pagerState = pagerState)
+            },
+            onDeleteConfirmed = {},
+            pagerState = pagerState,
+            onTitleChanged = {viewModel.setTitle(title = it)},
+            onDescriptionChanged = {viewModel.setDescription(description = it)}
+        )
     }
 }
