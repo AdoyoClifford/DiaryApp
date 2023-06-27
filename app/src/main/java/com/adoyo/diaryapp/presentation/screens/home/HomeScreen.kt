@@ -76,6 +76,7 @@ fun HomeContent(
             diaryNotes.forEach { (localDate, diaries) ->
                 stickyHeader(localDate) {
                     DateHeader(localDate = localDate)
+                    Log.d("","")
                 }
                 items(items = diaries, key = { it._id.toString() }) {
                     DiaryHolder(diary = it, onClick = onClick)

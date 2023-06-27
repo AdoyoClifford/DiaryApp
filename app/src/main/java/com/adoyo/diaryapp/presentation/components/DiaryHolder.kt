@@ -72,8 +72,8 @@ fun DiaryHolder(diary: Diary, onClick: (String) -> Unit) {
                 interactionSource = remember {
                     MutableInteractionSource()
                 }
-            ) { onClick(diary._id.toString())
-                Log.d("_id","${diary._id}")
+            ) {
+                onClick(diary._id.toHexString())
             }
     ) {
         Spacer(modifier = Modifier.width(14.dp))
@@ -118,7 +118,7 @@ fun DiaryHolder(diary: Diary, onClick: (String) -> Unit) {
                             stiffness = Spring.StiffnessLow
                         )
                     )
-                    ) {
+                ) {
                     Column(
                         modifier = Modifier.padding(14.dp)
                     ) {

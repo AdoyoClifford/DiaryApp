@@ -196,11 +196,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         WriteScreen(
             uiState = uiState,
             onBackPressed = onBackPressed,
-            selectedDiary = Diary().apply {
-                title = "Title"
-                description = "Hello there"
-
-            },
+            selectedDiary = null,
             onDeleteConfirmed = {},
             pagerState = pagerState,
             onTitleChanged = {viewModel.setTitle(title = it)},
