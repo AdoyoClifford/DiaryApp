@@ -7,6 +7,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,7 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.adoyo.diaryapp.data.repository.MongoDB
-import com.adoyo.diaryapp.model.Diary
+import com.adoyo.diaryapp.model.Mood
 import com.adoyo.diaryapp.presentation.components.DisplayAlertDialog
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationViewModel
@@ -189,18 +190,27 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         })
     ) {
         val viewModel: WriteScreenViewModel = viewModel()
-        val selectedId = viewModel.uiState.selectedDiary
         val uiState = viewModel.uiState
-
         val pagerState = rememberPagerState()
+        val pageNumber by remember {
+            derivedStateOf { pagerState.currentPage }
+        }
+
         WriteScreen(
             uiState = uiState,
+            moodName = { Mood.values()[pageNumber].name },
             onBackPressed = onBackPressed,
-            selectedDiary = null,
             onDeleteConfirmed = {},
             pagerState = pagerState,
-            onTitleChanged = {viewModel.setTitle(title = it)},
-            onDescriptionChanged = {viewModel.setDescription(description = it)}
+            onTitleChanged = { viewModel.setTitle(title = it) },
+            onDescriptionChanged = { viewModel.setDescription(description = it) },
+            onSaveClicked = {
+                viewModel.insertDiary(
+                    diary = it.apply { mood = Mood.values()[pageNumber].name },
+                    onSuccess = {onBackPressed()},
+                    onError = {}
+                )
+            }
         )
     }
 }

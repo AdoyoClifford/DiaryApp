@@ -16,3 +16,14 @@ fun RealmInstant.toInstant(): Instant {
         Instant.ofEpochSecond(sec - 1, 1_000_000 + nano.toLong())
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun Instant.toRealmInstant(): RealmInstant {
+    val sec = this.epochSecond
+    val nano = this.nano
+    return if (sec >= 0) {
+        RealmInstant.from(sec, nano)
+    } else {
+        RealmInstant.from(sec + 1,-1_000_000 + nano)
+    }
+}

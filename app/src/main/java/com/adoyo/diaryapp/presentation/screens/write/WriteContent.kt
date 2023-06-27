@@ -1,6 +1,8 @@
 package com.adoyo.diaryapp.presentation.screens.write
 
-import android.widget.Space
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,22 +33,27 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.adoyo.diaryapp.model.Diary
 import com.adoyo.diaryapp.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WriteContent(
+    uiState: UiState,
     paddingValues: PaddingValues,
     pagerState: PagerState,
     title: String,
     onTitleCHanged: (String) -> Unit,
     description: String,
-    onDescriptionChange: (String) -> Unit
+    onDescriptionChange: (String) -> Unit,
+    onSaveClicked: (Diary) -> Unit
 
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -125,9 +132,19 @@ fun WriteContent(
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(modifier = Modifier
-                .fillMaxWidth()
-                .height(54.dp), onClick = { }, shape = Shapes().small
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp), onClick = {
+                    if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()) {
+                              onSaveClicked(Diary().apply {
+                                  this.title = uiState.title
+                                  this.description = uiState.description
+                              })
+                    } else {
+                        Toast.makeText(context,"This cannot be empty",Toast.LENGTH_SHORT).show()
+                    }
+                }, shape = Shapes().small
             ) {
                 Text(text = "Save")
             }
