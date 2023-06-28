@@ -31,6 +31,7 @@ import com.adoyo.diaryapp.utils.toInstant
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -42,8 +43,12 @@ fun WriteTopBar(
     moodName: () -> String,
     selectedDiary: Diary?,
     onBackPressed: () -> Unit,
-    onDeleteConfirmed: () -> Unit
+    onDeleteConfirmed: () -> Unit,
+    onUpdatedDateTime: (ZonedDateTime) -> Unit
 ) {
+//    var dateDialog = rememberSheetState()
+//    var timeDialog = rememberSheetState()
+
     val currentDate by remember {
         mutableStateOf(LocalDate.now())
     }
@@ -108,6 +113,7 @@ fun WriteTopBar(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DeleteDiaryAction(
     selectedDiary: Diary?,

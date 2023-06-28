@@ -34,7 +34,8 @@ fun WriteScreen(
                 moodName = moodName,
                 onBackPressed = onBackPressed,
                 selectedDiary = uiState.selectedDiary,
-                onDeleteConfirmed = onDeleteConfirmed
+                onDeleteConfirmed = onDeleteConfirmed,
+                onUpdatedDateTime = {}
             )
         },
         content = {

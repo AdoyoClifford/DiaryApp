@@ -13,11 +13,14 @@ import com.adoyo.diaryapp.model.Diary
 import com.adoyo.diaryapp.model.Mood
 import com.adoyo.diaryapp.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.adoyo.diaryapp.utils.RequestState
+import com.adoyo.diaryapp.utils.toRealmInstant
+import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
+import java.time.ZonedDateTime
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -57,7 +60,7 @@ class WriteScreenViewModel(
         }
     }
 
-    fun selectedDiary(diary: Diary) {
+    private fun selectedDiary(diary: Diary) {
         uiState = uiState.copy(
             selectedDiary = diary
         )
@@ -75,12 +78,16 @@ class WriteScreenViewModel(
         uiState = uiState.copy(mood = mood)
     }
 
+    fun updateDateTime(zonedDateTime: ZonedDateTime) {
+        uiState = uiState.copy(updatedDateTime = zonedDateTime.toInstant().toRealmInstant())
+    }
+
     fun upsertDiary(
         diary: Diary,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             if (uiState.selectedDiaryId != null) {
                 updateDiary(diary = diary, onSuccess = onSuccess, onError = onError)
             } else {
@@ -113,7 +120,10 @@ class WriteScreenViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        val result = MongoDB.updateDiary(diary = diary.apply { _id = ObjectId.invoke(uiState.selectedDiaryId!!) })
+        val result = MongoDB.updateDiary(diary = diary.apply {
+            _id = ObjectId.invoke(uiState.selectedDiaryId!!)
+            date = uiState.selectedDiary!!.date
+        })
         if (result is RequestState.Success) {
             withContext(Dispatchers.Main) {
                 onSuccess()
@@ -132,4 +142,5 @@ data class UiState(
     val title: String = "",
     val description: String = "",
     val mood: Mood = Mood.Happy,
+    val updatedDateTime: RealmInstant? = null
 )
