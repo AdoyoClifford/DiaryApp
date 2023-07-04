@@ -144,7 +144,8 @@ fun GalleryUploader(
                         .clip(imageShape)
                         .size(imageSize)
                         .clickable { onImageClicked(galleryImage) },
-                    model = ImageRequest.Builder(LocalContext.current).data(galleryImage.image).crossfade(true)
+                    model = ImageRequest.Builder(LocalContext.current).data(galleryImage.image)
+                        .crossfade(true)
                         .build(), contentDescription = "Gallery Image",
                     contentScale = ContentScale.Crop
                 )
