@@ -7,6 +7,7 @@ import com.adoyo.diaryapp.utils.Constants.APP_ID
 import com.adoyo.diaryapp.utils.RequestState
 import com.adoyo.diaryapp.utils.toInstant
 import io.realm.kotlin.Realm
+import io.realm.kotlin.delete
 import io.realm.kotlin.ext.query
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.sync.SyncConfiguration
@@ -101,7 +102,7 @@ object MongoDB : MongoRepository {
     override suspend fun updateDiary(diary: Diary): RequestState<Diary> {
         return if (user != null) {
             realm.write {
-               val queriedDiary = query<Diary>(query = "_id == $0", diary._id).first().find()
+                val queriedDiary = query<Diary>(query = "_id == $0", diary._id).first().find()
                 if (queriedDiary != null) {
                     queriedDiary.title = diary.title
                     queriedDiary.description = diary.description
@@ -117,6 +118,32 @@ object MongoDB : MongoRepository {
             RequestState.Error(UserNotAuthenticatedException())
 
         }
+    }
+
+    override suspend fun deleteDiary(id: ObjectId): RequestState<Diary> {
+        return if (user != null) {
+            realm.write {
+                val diary =
+                    query<Diary>(query = "_id == $0 AND ownerId == $1", id, user.id).first()
+                        .find()
+                if (diary != null) {
+                    try {
+                        delete(diary)
+                        RequestState.Success(data = diary)
+                    } catch (e: Exception) {
+                        RequestState.Error(e)
+                    }
+
+                } else {
+                    RequestState.Error(Exception("Diary does not exist"))
+                }
+
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
+
+        }
+
     }
 
 

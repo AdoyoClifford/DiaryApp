@@ -2,6 +2,7 @@ package com.adoyo.diaryapp.navigation
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -13,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -192,6 +194,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         val viewModel: WriteScreenViewModel = viewModel()
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
+        val context = LocalContext.current
         val pageNumber by remember {
             derivedStateOf { pagerState.currentPage }
         }
@@ -200,16 +203,32 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
             uiState = uiState,
             moodName = { Mood.values()[pageNumber].name },
             onBackPressed = onBackPressed,
-            onDeleteConfirmed = {},
+            onDeleteConfirmed = {
+                viewModel.deleteDiary(
+                    onSuccess = {
+                        Toast.makeText(
+                            context,
+                            "Deleted Successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onError = { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
+                )
+                onBackPressed()
+            },
             pagerState = pagerState,
             onTitleChanged = { viewModel.setTitle(title = it) },
             onDescriptionChanged = { viewModel.setDescription(description = it) },
-            onUpdatedDateTime = {viewModel.updateDateTime(zonedDateTime = it)},
+            onUpdatedDateTime = { viewModel.updateDateTime(zonedDateTime = it) },
             onSaveClicked = {
                 viewModel.upsertDiary(
                     diary = it.apply { mood = Mood.values()[pageNumber].name },
-                    onSuccess = {onBackPressed()},
-                    onError = {}
+                    onSuccess = { onBackPressed() },
+                    onError = { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    }
                 )
             }
         )

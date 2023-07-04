@@ -16,6 +16,7 @@ import com.adoyo.diaryapp.utils.RequestState
 import com.adoyo.diaryapp.utils.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,6 +49,9 @@ class WriteScreenViewModel(
         if (uiState.selectedDiaryId != null) {
             viewModelScope.launch {
                 MongoDB.getSelectedDiary(diaryId = ObjectId.invoke(uiState.selectedDiaryId!!))
+                    .catch {
+                        emit(RequestState.Error(Exception("Diary already deleted")))
+                    }
                     .collect { diary ->
                         if (diary is RequestState.Success) {
                             selectedDiary(diary = diary.data)
@@ -80,6 +84,27 @@ class WriteScreenViewModel(
 
     fun updateDateTime(zonedDateTime: ZonedDateTime) {
         uiState = uiState.copy(updatedDateTime = zonedDateTime.toInstant().toRealmInstant())
+
+    }
+
+    fun deleteDiary(
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            if (uiState.selectedDiaryId != null) {
+                val result = MongoDB.deleteDiary(id = ObjectId(uiState.selectedDiaryId!!))
+                if (result is RequestState.Success) {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                } else if (result is RequestState.Error) {
+                    withContext(Dispatchers.Main) {
+                        onError(result.error.message.toString())
+                    }
+                }
+            }
+        }
     }
 
     fun upsertDiary(
