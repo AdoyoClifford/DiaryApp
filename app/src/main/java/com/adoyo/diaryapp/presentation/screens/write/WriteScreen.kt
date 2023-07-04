@@ -1,6 +1,7 @@
 package com.adoyo.diaryapp.presentation.screens.write
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -8,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.adoyo.diaryapp.model.Diary
+import com.adoyo.diaryapp.model.GalleryState
 import com.adoyo.diaryapp.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
@@ -17,6 +19,7 @@ import java.time.ZonedDateTime
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun WriteScreen(
+    galleryState: GalleryState,
     moodName: () -> String,
     uiState: UiState,
     onBackPressed: () -> Unit,
@@ -25,7 +28,8 @@ fun WriteScreen(
     onDescriptionChanged: (String) -> Unit,
     pagerState: PagerState,
     onSaveClicked: (Diary) -> Unit,
-    onUpdatedDateTime: (ZonedDateTime) -> Unit
+    onUpdatedDateTime: (ZonedDateTime) -> Unit,
+    onImageSelect: (Uri) -> Unit
 ) {
 
     LaunchedEffect(key1 = uiState.mood) {
@@ -43,6 +47,7 @@ fun WriteScreen(
         },
         content = {
             WriteContent(
+                galleryState = galleryState,
                 paddingValues = it,
                 pagerState = pagerState,
                 title = uiState.title,
@@ -52,7 +57,8 @@ fun WriteScreen(
                 description = uiState.description,
                 onDescriptionChange = onDescriptionChanged,
                 uiState = uiState,
-                onSaveClicked = onSaveClicked
+                onSaveClicked = onSaveClicked,
+                onImageSelect = onImageSelect
             )
         }
     )

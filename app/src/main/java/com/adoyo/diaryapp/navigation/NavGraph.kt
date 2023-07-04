@@ -23,7 +23,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.adoyo.diaryapp.data.repository.MongoDB
+import com.adoyo.diaryapp.model.GalleryImage
 import com.adoyo.diaryapp.model.Mood
+import com.adoyo.diaryapp.model.rememberGalleryState
 import com.adoyo.diaryapp.presentation.components.DisplayAlertDialog
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationViewModel
@@ -194,12 +196,14 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         val viewModel: WriteScreenViewModel = viewModel()
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
+        val galleryState = rememberGalleryState()
         val context = LocalContext.current
         val pageNumber by remember {
             derivedStateOf { pagerState.currentPage }
         }
 
         WriteScreen(
+            galleryState = galleryState,
             uiState = uiState,
             moodName = { Mood.values()[pageNumber].name },
             onBackPressed = onBackPressed,
@@ -229,6 +233,11 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
                     onError = { message ->
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     }
+                )
+            },
+            onImageSelect = {
+                galleryState.addImages(
+                    GalleryImage(image = it, remotePath = "")
                 )
             }
         )

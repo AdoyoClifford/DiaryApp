@@ -1,5 +1,6 @@
 package com.adoyo.diaryapp.presentation.screens.write
 
+import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -26,23 +27,31 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.adoyo.diaryapp.model.Diary
+import com.adoyo.diaryapp.model.GalleryState
 import com.adoyo.diaryapp.model.Mood
+import com.adoyo.diaryapp.presentation.components.GalleryUploader
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun WriteContent(
+    galleryState: GalleryState,
     uiState: UiState,
     paddingValues: PaddingValues,
     pagerState: PagerState,
@@ -50,11 +59,19 @@ fun WriteContent(
     onTitleCHanged: (String) -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
-    onSaveClicked: (Diary) -> Unit
+    onSaveClicked: (Diary) -> Unit,
+    onImageSelect: (Uri) -> Unit
 
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = scrollState) {
+        scrollState.scrollTo(scrollState.maxValue)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -99,7 +116,12 @@ fun WriteContent(
                     imeAction = ImeAction.Next
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = {}
+                    onNext = {
+                        scope.launch {
+                            scrollState.animateScrollTo(Int.MAX_VALUE)
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    }
                 ),
                 maxLines = 1,
                 singleLine = true
@@ -123,7 +145,9 @@ fun WriteContent(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = {}
+                    onNext = {
+                        focusManager.clearFocus()
+                    }
                 )
             )
         }
@@ -132,17 +156,25 @@ fun WriteContent(
         ) {
             Spacer(modifier = Modifier.height(12.dp))
 
+            GalleryUploader(
+                galleryState = galleryState,
+                onAddClicked = {  },
+                onImageSelect = onImageSelect,
+                onImageClicked = {}
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(54.dp), onClick = {
                     if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()) {
-                              onSaveClicked(Diary().apply {
-                                  this.title = uiState.title
-                                  this.description = uiState.description
-                              })
+                        onSaveClicked(Diary().apply {
+                            this.title = uiState.title
+                            this.description = uiState.description
+                        })
                     } else {
-                        Toast.makeText(context,"This cannot be empty",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "This cannot be empty", Toast.LENGTH_SHORT).show()
                     }
                 }, shape = Shapes().small
             ) {
