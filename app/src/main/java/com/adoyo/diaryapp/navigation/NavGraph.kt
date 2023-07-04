@@ -204,6 +204,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
             pagerState = pagerState,
             onTitleChanged = { viewModel.setTitle(title = it) },
             onDescriptionChanged = { viewModel.setDescription(description = it) },
+            onUpdatedDateTime = {viewModel.updateDateTime(zonedDateTime = it)},
             onSaveClicked = {
                 viewModel.upsertDiary(
                     diary = it.apply { mood = Mood.values()[pageNumber].name },

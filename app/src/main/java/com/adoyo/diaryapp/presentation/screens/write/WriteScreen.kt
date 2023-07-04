@@ -2,6 +2,7 @@ package com.adoyo.diaryapp.presentation.screens.write
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -10,6 +11,7 @@ import com.adoyo.diaryapp.model.Diary
 import com.adoyo.diaryapp.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import java.time.ZonedDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPagerApi::class)
@@ -22,7 +24,8 @@ fun WriteScreen(
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     pagerState: PagerState,
-    onSaveClicked: (Diary) -> Unit
+    onSaveClicked: (Diary) -> Unit,
+    onUpdatedDateTime: (ZonedDateTime) -> Unit
 ) {
 
     LaunchedEffect(key1 = uiState.mood) {
@@ -35,7 +38,7 @@ fun WriteScreen(
                 onBackPressed = onBackPressed,
                 selectedDiary = uiState.selectedDiary,
                 onDeleteConfirmed = onDeleteConfirmed,
-                onUpdatedDateTime = {}
+                onUpdatedDateTime = onUpdatedDateTime
             )
         },
         content = {
@@ -43,7 +46,9 @@ fun WriteScreen(
                 paddingValues = it,
                 pagerState = pagerState,
                 title = uiState.title,
-                onTitleCHanged = onTitleChanged,
+                onTitleCHanged = {name ->
+                    onTitleChanged(name)
+                                 Log.d("Name",name)},
                 description = uiState.description,
                 onDescriptionChange = onDescriptionChanged,
                 uiState = uiState,

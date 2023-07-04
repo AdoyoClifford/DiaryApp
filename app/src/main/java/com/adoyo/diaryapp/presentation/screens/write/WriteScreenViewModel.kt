@@ -102,7 +102,11 @@ class WriteScreenViewModel(
         onError: (String) -> Unit
     ) {
 
-        val result = MongoDB.insertDiary(diary = diary)
+        val result = MongoDB.insertDiary(diary = diary.apply {
+            if (uiState.updatedDateTime != null) {
+                date = uiState.updatedDateTime!!
+            }
+        })
         if (result is RequestState.Success) {
             withContext(Dispatchers.Main) {
                 onSuccess()
@@ -122,7 +126,11 @@ class WriteScreenViewModel(
     ) {
         val result = MongoDB.updateDiary(diary = diary.apply {
             _id = ObjectId.invoke(uiState.selectedDiaryId!!)
-            date = uiState.selectedDiary!!.date
+            date = if (uiState.updatedDateTime != null) {
+                uiState.updatedDateTime!!
+            } else {
+                uiState.selectedDiary!!.date
+            }
         })
         if (result is RequestState.Success) {
             withContext(Dispatchers.Main) {
