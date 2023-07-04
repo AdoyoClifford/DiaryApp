@@ -34,5 +34,5 @@ class GalleryState {
 
 data class GalleryImage(
     val image: Uri,
-    val remotePath: String = ""
+    val remoteImagePath: String = ""
 )

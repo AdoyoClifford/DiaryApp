@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.realm.kotlin)
     alias(libs.plugins.hilt)
     alias(libs.plugins.devtools.ksp)
-    // id("com.google.gms.google-services")
+    alias(libs.plugins.google.services)
 }
 
 android {

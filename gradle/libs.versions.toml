@@ -46,6 +46,7 @@ uiTestManifest = "1.4.3"
 uiTooling = "1.4.3"
 uiTestJunit4 = "1.4.3"
 uiToolingPreview = "1.4.3"
+googleServices = "4.3.15"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -103,6 +104,7 @@ realm-kotlin = {id = "io.realm.kotlin", version.ref = "realm-kotlin"}
 hilt = {id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid"}
 kotlin-kapt = {id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinKapt"}
 devtools-ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+google-services = {id = "com.google.gms.google-services", version.ref = "googleServices"}
 
 
 

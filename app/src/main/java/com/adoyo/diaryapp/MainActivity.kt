@@ -27,6 +27,8 @@ import com.adoyo.diaryapp.navigation.Screen
 import com.adoyo.diaryapp.navigation.SetUpNavGraph
 import com.adoyo.diaryapp.ui.theme.DiaryAppTheme
 import com.adoyo.diaryapp.utils.Constants.APP_ID
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import io.realm.kotlin.mongodb.App
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
@@ -38,6 +40,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition{
             keepSplashOpened
         }
+        Firebase.initialize(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             DiaryAppTheme {

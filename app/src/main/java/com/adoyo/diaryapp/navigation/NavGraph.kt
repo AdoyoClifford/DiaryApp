@@ -25,7 +25,6 @@ import androidx.navigation.navArgument
 import com.adoyo.diaryapp.data.repository.MongoDB
 import com.adoyo.diaryapp.model.GalleryImage
 import com.adoyo.diaryapp.model.Mood
-import com.adoyo.diaryapp.model.rememberGalleryState
 import com.adoyo.diaryapp.presentation.components.DisplayAlertDialog
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationScreen
 import com.adoyo.diaryapp.presentation.screens.auth.AuthenticationViewModel
@@ -91,7 +90,7 @@ fun NavGraphBuilder.authenticationRoute(
             oneTapState = oneTapState,
             loadingState = loadingState,
             messageBarState = messageBarState,
-            onTokenIdReceived = { tokenId ->
+            onSuccessfulFireBaseSignIn = { tokenId ->
                 viewModel.signInWithMongoAtlas(
                     tokenId = tokenId,
                     onSuccess = {
@@ -114,7 +113,8 @@ fun NavGraphBuilder.authenticationRoute(
                 viewModel.setLoadingState(true)
             },
             isAuthenticated = isAuthenticated,
-            navigateHome = navigateHome
+            navigateHome = navigateHome,
+            onFailedFireBaseSignIn = {}
         )
     }
 }
@@ -196,7 +196,7 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
         val viewModel: WriteScreenViewModel = viewModel()
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState()
-        val galleryState = rememberGalleryState()
+        val galleryState = viewModel.galleryState
         val context = LocalContext.current
         val pageNumber by remember {
             derivedStateOf { pagerState.currentPage }
@@ -236,8 +236,10 @@ fun NavGraphBuilder.writeRoute(onBackPressed: () -> Unit) {
                 )
             },
             onImageSelect = {
-                galleryState.addImages(
-                    GalleryImage(image = it, remotePath = "")
+                val type = context.contentResolver.getType(it)?.split("/")?.last() ?: "jpg"
+                Log.d("WriteViewModel", "$it")
+                viewModel.addImage(
+                    it, imageType = type
                 )
             }
         )

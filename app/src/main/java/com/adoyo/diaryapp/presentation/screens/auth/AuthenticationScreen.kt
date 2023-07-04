@@ -3,12 +3,13 @@ package com.adoyo.diaryapp.presentation.screens.auth
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.adoyo.diaryapp.utils.Constants.CLIENT_ID
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarState
 import com.stevdzasan.onetap.OneTapSignInState
@@ -21,10 +22,11 @@ fun AuthenticationScreen(
     loadingState: Boolean,
     oneTapState: OneTapSignInState,
     messageBarState: MessageBarState,
-    onTokenIdReceived: (String) -> Unit,
+    onSuccessfulFireBaseSignIn: (String) -> Unit,
+    onFailedFireBaseSignIn: (Exception) -> Unit,
     onDialogDismissed: (String) -> Unit,
     onButtonClicked: () -> Unit,
-    navigateHome: () -> Unit
+    navigateHome: () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier
@@ -43,8 +45,18 @@ fun AuthenticationScreen(
     OneTapSignInWithGoogle(
         state = oneTapState,
         clientId = CLIENT_ID,
-        onTokenIdReceived = { token ->
-            onTokenIdReceived(token)
+        onTokenIdReceived = { tokenId ->
+
+            val credential = GoogleAuthProvider.getCredential(tokenId, null)
+            FirebaseAuth.getInstance().signInWithCredential(credential)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        onSuccessfulFireBaseSignIn(tokenId)
+                    } else {
+                        task.exception?.let { it -> onFailedFireBaseSignIn(it) }
+                    }
+                }
+            onSuccessfulFireBaseSignIn(tokenId)
         },
         onDialogDismissed = { message ->
             onDialogDismissed(message)

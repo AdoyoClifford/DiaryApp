@@ -5,5 +5,5 @@ plugins {
     alias(libs.plugins.realm.kotlin) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.devtools.ksp) apply false
-    // id("com.google.gms.google-services") version "4.3.15" apply false
+    alias(libs.plugins.google.services) version "4.3.15" apply false
 }
