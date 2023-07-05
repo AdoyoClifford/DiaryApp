@@ -19,6 +19,7 @@ import com.adoyo.diaryapp.utils.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.adoyo.diaryapp.utils.RequestState
 import com.adoyo.diaryapp.utils.toRealmInstant
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -138,6 +139,7 @@ class WriteScreenViewModel(
             }
         })
         if (result is RequestState.Success) {
+            uploadImageToFirebase()
             withContext(Dispatchers.Main) {
                 onSuccess()
             }
@@ -163,6 +165,7 @@ class WriteScreenViewModel(
             }
         })
         if (result is RequestState.Success) {
+            uploadImageToFirebase()
             withContext(Dispatchers.Main) {
                 onSuccess()
             }
@@ -183,6 +186,15 @@ class WriteScreenViewModel(
                 remoteImagePath = remoteImagePath
             )
         )
+    }
+
+    private fun uploadImageToFirebase() {
+        val storage = FirebaseStorage.getInstance().reference
+        galleryState.images.forEach { galleryImage ->
+            val imagePath = storage.child(galleryImage.remoteImagePath)
+            imagePath.putFile(galleryImage.image)
+        }
+
     }
 }
 
